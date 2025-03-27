@@ -1,0 +1,1 @@
+export const STACK_SIZE = 16;
