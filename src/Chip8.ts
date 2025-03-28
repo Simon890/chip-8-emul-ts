@@ -23,4 +23,8 @@ export class Chip8 {
     public get memory() {
         return this._memory;
     }
+
+    public get keyboard() {
+        return this._keyboard;
+    }
 }
