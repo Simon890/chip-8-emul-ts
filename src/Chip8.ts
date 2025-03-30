@@ -38,7 +38,15 @@ export class Chip8 {
     }
 
     private _runOpcode() {
-        if(this._isPaused) return;
+        if(this._isPaused) {
+            return;
+        }
+        if(this._register.delayTimer > 0) {
+            this._register.delayTimer--;
+        }
+        if(this._register.soundTimer > 0) {
+            this._register.soundTimer--;
+        }
         const opcode = this.memory.getOpcode(this._register.PC);
         this._register.advance();
         const {instruction, args} = this._dissasembler.dissasemble(opcode);
@@ -195,7 +203,6 @@ export class Chip8 {
         }
         if(instruction.id == "SKP_VX") {
             const vx = this._register.V[args[0]];
-            console.log("IS KEY DOWN", vx, this._keyboard);
             if(this._keyboard.isKeyDown(vx)) {
                 this._register.advance();
             }
@@ -215,10 +222,11 @@ export class Chip8 {
         if(instruction.id == "LD_VX_K") {
             this._isPaused = true;
             this._keyboard.addListener("keydown", (key : number) => {
-                this._keyboard.removeListener("keydown");
-                this._register.V[args[0]] = key;
-                this._isPaused = false;
-                requestAnimationFrame(() => this._runOpcode());
+                if(this._isPaused) {
+                    this._register.V[args[0]] = key;
+                    this._isPaused = false;
+                    requestAnimationFrame(() => this._runOpcode());
+                }
             });
             
         }
