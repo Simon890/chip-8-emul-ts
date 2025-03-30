@@ -1,4 +1,4 @@
-import { MEMORY_SIZE, STRIPE_CHARSET } from "./constants/memoryConstants";
+import { MEMORY_SIZE, START_PROGRAM_ADDRESS, STRIPE_CHARSET } from "./constants/memoryConstants";
 import { MemoryOutOfBounds } from "./errors/MemoryOutOfBounds";
 
 export class Memory {
@@ -13,6 +13,10 @@ export class Memory {
     public reset() {
         this._buffer.fill(0);
         this._buffer.set(STRIPE_CHARSET, 0);
+    }
+
+    public loadRom(rom : ArrayLike<number>) {
+        this._buffer.set(rom, START_PROGRAM_ADDRESS);
     }
 
     public setMemory(index : number, value : number) {
