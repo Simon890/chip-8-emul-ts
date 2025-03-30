@@ -34,7 +34,20 @@ export class Chip8 {
     }
 
     public run() {
-        requestAnimationFrame(() => this._runOpcode());
+        this._asyncRun();
+    }
+
+    private async _asyncRun() {
+        while(true) {
+            this._runOpcode();
+            this._runOpcode();
+            this._runOpcode();
+            await this._sleep();
+        }
+    }
+
+    private _sleep() {
+        return new Promise((resolve) => setTimeout(resolve, 0.05));
     }
 
     private _runOpcode() {
@@ -50,27 +63,22 @@ export class Chip8 {
         const opcode = this.memory.getOpcode(this._register.PC);
         this._register.advance();
         const {instruction, args} = this._dissasembler.dissasemble(opcode);
-
+        
         if(instruction.id == "CLS") {
             this.display.clear();
-            
         }
         if(instruction.id == "RET") {
             this._register.PC = this._register.stack.pop();
-            
         }
         if(instruction.id == "SYS_ADDR") {
             this._register.PC = args[0];
-            
         }
         if(instruction.id == "JP_ADDR") {
             this._register.PC = args[0];
-            
         }
         if(instruction.id == "CALL_ADDR") {
             this._register.stack.push(this._register.PC);
             this._register.PC = args[0];
-            
         }
         if(instruction.id == "SE_VX_KK") {
             const vx = this._register.V[args[0]];
@@ -78,7 +86,6 @@ export class Chip8 {
             if(vx == kk) {
                 this._register.advance();
             }
-            
         }
         if(instruction.id == "SNE_VX_KK") {
             const vx = this._register.V[args[0]];
@@ -86,7 +93,6 @@ export class Chip8 {
             if(vx != kk) {
                 this._register.advance();
             }
-            
         }
         if(instruction.id == "SE_VX_VY") {
             const vx = this._register.V[args[0]];
@@ -94,31 +100,24 @@ export class Chip8 {
             if(vx == vy) {
                 this._register.advance();
             }
-            
         }
         if(instruction.id == "LD_VX_KK") {
             this._register.V[args[0]] = args[1];
-            
         }
         if(instruction.id == "ADD_VX_KK") {
             this._register.V[args[0]] += args[1];
-            
         }
         if(instruction.id == "LD_VX_VY") {
             this._register.V[args[0]] = this._register.V[args[1]];
-            
         }
         if(instruction.id == "OR_VX_VY") {
             this._register.V[args[0]] |= this._register.V[args[1]];
-            
         }
         if(instruction.id == "AND_VX_VY") {
             this._register.V[args[0]] &= this._register.V[args[1]];
-            
         }
         if(instruction.id == "XOR_VX_VY") {
             this._register.V[args[0]] ^= this._register.V[args[1]];
-            
         }
         if(instruction.id == "ADD_VX_VY") {
             const vx = this._register.V[args[0]];
@@ -130,7 +129,6 @@ export class Chip8 {
             } else {
                 this._register.V[0x0f] = 0;
             }
-            
         }
         if(instruction.id == "SUB_VX_VY") {
             const vx = this._register.V[args[0]];
@@ -142,14 +140,12 @@ export class Chip8 {
             } else {
                 this._register.V[0x0f] = 0;
             }
-            
         }
         if(instruction.id == "SHR_VX_VY") {
             const vx = this._register.V[args[0]];
             const leastBit = vx & 0x01;
             this._register.V[0x0f] = leastBit;
             this._register.V[args[0]] >>= 1;
-            
         }
         if(instruction.id == "SUBN_VX_VY") {
             const vx = this._register.V[args[0]];
@@ -161,14 +157,12 @@ export class Chip8 {
                 this._register.V[0x0f] = 0;
             }
             this._register.V[args[0]] = sub;
-            
         }
         if(instruction.id == "SHL_VX_VY") {
             const vx = this._register.V[args[0]];
             const leastBit = (vx & 0x80) >> 7;
             this._register.V[0x0f] = leastBit;
             this._register.V[args[0]] <<= 1;
-            
         }
         if(instruction.id == "SNE_VX_VY") {
             const vx = this._register.V[args[0]];
@@ -176,20 +170,16 @@ export class Chip8 {
             if(vx != vy) {
                 this._register.advance();
             }
-            
         }
         if(instruction.id == "LD_I_ADDR") {
             this._register.I = args[0];
-            
         }
         if(instruction.id == "JP_V0_ADDR") {
             this._register.PC = args[0] + this._register.V[0];
-            
         }
         if(instruction.id == "RND_VX_KK") {
             const rand = Math.floor(Math.random() * 255) & args[1];
             this._register.V[args[0]] = rand;
-            
         }
         if(instruction.id == "DRW_VX_VY_N") {
             const vx = this._register.V[args[0]];
@@ -206,18 +196,15 @@ export class Chip8 {
             if(this._keyboard.isKeyDown(vx)) {
                 this._register.advance();
             }
-            
         }
         if(instruction.id == "SKNP_VX") {
             const vx = this._register.V[args[0]];
             if(!this.keyboard.isKeyDown(vx)) {
                 this._register.advance();
             }
-            
         }
         if(instruction.id == "LD_VX_DT") {
             this._register.V[args[0]] = this._register.delayTimer;
-            
         }
         if(instruction.id == "LD_VX_K") {
             this._isPaused = true;
@@ -225,26 +212,20 @@ export class Chip8 {
                 if(this._isPaused) {
                     this._register.V[args[0]] = key;
                     this._isPaused = false;
-                    requestAnimationFrame(() => this._runOpcode());
                 }
             });
-            
         }
         if(instruction.id == "LD_DT_VX") {
             this._register.delayTimer = this._register.V[args[0]];
-            
         }
         if(instruction.id == "LD_ST_VX") {
             this._register.soundTimer = this._register.V[args[0]];
-            
         }
         if(instruction.id == "ADD_I_VX") {
             this._register.I += this._register.V[args[0]];
-            
         }
         if(instruction.id == "LD_F_VX") {
             this._register.I = this._register.V[args[0]] * STRIPE_HEIGHT;
-            
         }
         if(instruction.id == "LD_B_VX") {
             let vx = this._register.V[args[0]];
@@ -255,21 +236,17 @@ export class Chip8 {
             this._memory.setMemory(this._register.I, hundreds);
             this._memory.setMemory(this._register.I + 1, tens);
             this._memory.setMemory(this._register.I + 2, ones);
-            
         }
         if(instruction.id == "LD_I_VX") {
             for (let i = 0; i <= args[0]; i++) {
                 this._memory.setMemory(this._register.I + i, this._register.V[i]);
             }
-            
         }
         if(instruction.id == "LD_VX_I") {
             for (let i = 0; i <= args[0]; i++) {
                 this._register.V[i] = this._memory.getMemory(this._register.I + i);
             }
-            
         }
-        requestAnimationFrame(() => this._runOpcode());
     }
 
     public get display() {
