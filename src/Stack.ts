@@ -17,7 +17,7 @@ export class Stack {
     constructor() {
         this._buffer = new Uint16Array(STACK_SIZE);
         this._buffer.fill(0);
-        this._SP = 0;
+        this._SP = -1;
     }
 
     public get SP() {
@@ -25,15 +25,15 @@ export class Stack {
     }
 
     public push(value : number) {
+        this._SP++;
         if(this._SP >= this._buffer.length) throw new StackOverflow(this._SP);
         this._buffer[this._SP] = value;
-        this._SP++;
     }
 
     public pop() {
-        this._SP--;
         if(this._SP < 0) throw new StackUnderflow(this._SP);
         const value = this._buffer[this._SP];
+        this._SP--;
         return value;
     }
 
