@@ -44,4 +44,48 @@ export class Register {
         this._PC = START_PROGRAM_ADDRESS;
         this._stack = new Stack();
     }
+
+    public get PC() {
+        return this._PC;
+    }
+
+    public set PC(value : number) {
+        this._PC = value;
+    }
+
+    public get V() {
+        return this._V;
+    }
+
+    public get soundTimer() {
+        return this._soundTimer;
+    }
+
+    public set soundTimer(value : number) {
+        this._soundTimer = value;
+    }
+
+    public get delayTimer() {
+        return this._delayTimer;
+    }
+
+    public set delayTimer(value : number) {
+        this._delayTimer = value;
+    }
+
+    public get I() {
+        return this._I;
+    }
+
+    public set I(value : number) {
+        this._I = value;
+    }
+
+    public get stack() {
+        return this._stack;
+    }
+
+    public advance() {
+        this._PC += 2;
+    }
 }
