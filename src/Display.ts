@@ -1,4 +1,5 @@
 import { BG_COLOR, DISPLAY_HEIGHT, DISPLAY_SCALAR, DISPLAY_WIDTH, PIXEL_COLOR } from "./constants/displayConstants";
+import { STRIPE_WIDTH } from "./constants/memoryConstants";
 import { Memory } from "./Memory";
 
 export class Display {
@@ -30,6 +31,26 @@ export class Display {
         }
         this._context.fillRect(0, 0, this._screen.width, this._screen.height);
         this._drawBuffer();
+    }
+
+    public drawSprite(x : number, y : number, spriteAddress : number, count : number) {
+        let pixelCollision = 0;
+        for (let ly = 0; ly < count; ly++) {
+            const line = this._memory.getMemory(spriteAddress + ly);
+            for (let lx = 0; lx < STRIPE_WIDTH; lx++) {
+                const bitToCheck = (0b10000000 >> lx);
+                const value = line & bitToCheck;
+                const py = (y + ly) % DISPLAY_HEIGHT;
+                const px = (x + lx) % DISPLAY_WIDTH;
+                if(value == 0) continue;
+                if(this._frameBuffer[px][py] == 1) {
+                    pixelCollision = 1;
+                }
+                this._frameBuffer[px][py] ^= 1;
+            }
+        }
+        this._drawBuffer();
+        return pixelCollision;
     }
 
     private _drawBuffer() {
