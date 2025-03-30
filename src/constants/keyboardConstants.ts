@@ -16,3 +16,21 @@ export const KEY_MAP = {
     "f": 0xe,
     "v": 0xf
 }
+export const NUMBER_TO_KEY = {
+    0: "x",
+    1: "1",
+    2: "2",
+    3: "3",
+    4: "q",
+    5: "w",
+    6: "e",
+    7: "a",
+    8: "s",
+    9: "d",
+    0xa: "z",
+    0xb: "c",
+    0xc: "4",
+    0xd: "r",
+    0xe: "f",
+    0xf: "v",
+}

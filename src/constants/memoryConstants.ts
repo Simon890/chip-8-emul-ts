@@ -1,6 +1,7 @@
 export const MEMORY_SIZE = 0xfff;
 export const START_PROGRAM_ADDRESS = 0x200;
-export const STRIPE_SIZE = 5;
+export const STRIPE_WIDTH = 8;
+export const STRIPE_HEIGHT = 5;
 export const STRIPE_CHARSET = [
     0xF0,
     0x90,

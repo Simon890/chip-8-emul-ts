@@ -10,3 +10,8 @@ export type Mask = {
     mask: number,
     shift: number
 }
+
+export type DissasembledInstruction = {
+    instruction: Instruction,
+    args: number[]
+}
