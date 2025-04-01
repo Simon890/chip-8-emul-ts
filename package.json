@@ -3,8 +3,10 @@
   "version": "1.0.0",
   "description": "Chip 8 Emulator - Typescript",
   "main": "index.ts",
+  "type": "module",
   "scripts": {
-    "watch": "webpack --watch"
+    "watch": "webpack --watch --mode development",
+    "build": "webpack --mode production",
   },
   "repository": {
     "type": "git",
