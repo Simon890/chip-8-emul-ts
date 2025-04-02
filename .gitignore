@@ -1,3 +1,8 @@
 node_modules
 .vscode
 public/chip-8.js
+public/src
+public/index.d.ts
+public/index.d.ts.map
+public/tsup.config.d.ts
+public/tsup.config.d.ts.map
