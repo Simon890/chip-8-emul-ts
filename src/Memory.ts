@@ -1,5 +1,7 @@
+import { EVENT_MEMORY_UPDATED } from "./constants/eventsConstants";
 import { MEMORY_SIZE, START_PROGRAM_ADDRESS, STRIPE_CHARSET } from "./constants/memoryConstants";
 import { MemoryOutOfBounds } from "./errors/MemoryOutOfBounds";
+import { EventHandler } from "./EventEmitter";
 
 export class Memory {
 
@@ -17,6 +19,7 @@ export class Memory {
 
     public loadRom(rom : ArrayLike<number>) {
         this._buffer.set(rom, START_PROGRAM_ADDRESS);
+        EventHandler.instance.emit(EVENT_MEMORY_UPDATED, this._buffer, START_PROGRAM_ADDRESS)
     }
 
     public setMemory(index : number, value : number) {

@@ -1,7 +1,9 @@
 import { Config } from "./Config";
+import { EVENT_INSTRUCTION, EVENT_KEY_PRESSED, EVENT_MEMORY_UPDATED } from "./constants/eventsConstants";
 import { START_PROGRAM_ADDRESS, STRIPE_HEIGHT } from "./constants/memoryConstants";
 import { Display } from "./Display";
 import { Dissasembler } from "./Dissasembler";
+import { EventHandler } from "./EventEmitter";
 import { Keyboard } from "./Keyboard";
 import { Memory } from "./Memory";
 import { Register } from "./Register";
@@ -21,8 +23,11 @@ export class Chip8 {
 
     private _isPaused : boolean;
 
+    private _eventHandler : EventHandler;
+
     constructor(config : PartialConfigObject) {
         Config.init(config);
+        this._eventHandler = EventHandler.instance;
         this._memory = new Memory();
         this._display = new Display(this._memory);
         this._register = new Register();
@@ -67,6 +72,8 @@ export class Chip8 {
         this._register.advance();
         const {instruction, args} = this._dissasembler.dissasemble(opcode);
         
+        this._eventHandler.emit(EVENT_INSTRUCTION, opcode, instruction, args, this._register.PC);
+
         if(instruction.id == "CLS") {
             this.display.clear();
         }
@@ -198,6 +205,7 @@ export class Chip8 {
             const vx = this._register.V[args[0]];
             if(this._keyboard.isKeyDown(vx)) {
                 this._register.advance();
+                this._eventHandler.emit(EVENT_KEY_PRESSED, vx);
             }
         }
         if(instruction.id == "SKNP_VX") {
@@ -215,6 +223,7 @@ export class Chip8 {
                 if(this._isPaused) {
                     this._register.V[args[0]] = key;
                     this._isPaused = false;
+                    this._eventHandler.emit(EVENT_KEY_PRESSED, key);
                 }
             });
         }
@@ -249,6 +258,13 @@ export class Chip8 {
             for (let i = 0; i <= args[0]; i++) {
                 this._register.V[i] = this._memory.getMemory(this._register.I + i);
             }
+        }
+    }
+
+    public get events() {
+        return {
+            on: this._eventHandler.on.bind(this._eventHandler),
+            off: this._eventHandler.off.bind(this._eventHandler)
         }
     }
 
