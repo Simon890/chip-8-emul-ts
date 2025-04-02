@@ -15,3 +15,12 @@ export type DissasembledInstruction = {
     instruction: Instruction,
     args: number[]
 }
+
+export type ConfigObject = {
+    canvas: string,
+    instructionsPerIteration: number,
+    pixelOnColor: string,
+    pixelOffColor: string,
+}
+
+export type PartialConfigObject = Partial<ConfigObject>

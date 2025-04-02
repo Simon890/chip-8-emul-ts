@@ -1,9 +1,11 @@
+import { Config } from "./Config";
 import { START_PROGRAM_ADDRESS, STRIPE_HEIGHT } from "./constants/memoryConstants";
 import { Display } from "./Display";
 import { Dissasembler } from "./Dissasembler";
 import { Keyboard } from "./Keyboard";
 import { Memory } from "./Memory";
 import { Register } from "./Register";
+import { PartialConfigObject } from "./types";
 
 export class Chip8 {
     
@@ -19,7 +21,8 @@ export class Chip8 {
 
     private _isPaused : boolean;
 
-    constructor() {
+    constructor(config : PartialConfigObject) {
+        Config.init(config);
         this._memory = new Memory();
         this._display = new Display(this._memory);
         this._register = new Register();
@@ -39,9 +42,9 @@ export class Chip8 {
 
     private async _asyncRun() {
         while(true) {
-            this._runOpcode();
-            this._runOpcode();
-            this._runOpcode();
+            for (let i = 0; i < Config.values.instructionsPerIteration; i++) {
+                this._runOpcode();
+            }
             await this._sleep();
         }
     }
@@ -259,5 +262,9 @@ export class Chip8 {
 
     public get keyboard() {
         return this._keyboard;
+    }
+
+    public get config() {
+        return Config.values;
     }
 }

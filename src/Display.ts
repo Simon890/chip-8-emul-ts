@@ -1,3 +1,4 @@
+import { Config } from "./Config";
 import { BG_COLOR, DISPLAY_HEIGHT, DISPLAY_SCALAR, DISPLAY_WIDTH, PIXEL_COLOR } from "./constants/displayConstants";
 import { STRIPE_WIDTH } from "./constants/memoryConstants";
 import { Memory } from "./Memory";
@@ -11,8 +12,8 @@ export class Display {
 
     constructor(memory : Memory) {
         this._memory = memory;
-        const screen = document.querySelector("canvas");
-        if(screen == null) throw new Error("Canvas not found");
+        const screen = document.querySelector(Config.values.canvas);
+        if(screen == null || !(screen instanceof HTMLCanvasElement)) throw new Error("Canvas not found");
         this._screen = screen;
         this._screen.width = DISPLAY_WIDTH * DISPLAY_SCALAR;
         this._screen.height = DISPLAY_HEIGHT * DISPLAY_SCALAR;
@@ -62,7 +63,7 @@ export class Display {
     }
 
     public drawPixel(w : number, h : number, value : number) {
-        this._context.fillStyle = value > 0 ? PIXEL_COLOR : BG_COLOR;
+        this._context.fillStyle = value > 0 ? Config.values.pixelOnColor : Config.values.pixelOffColor;
         this._context.fillRect(w * DISPLAY_SCALAR, h * DISPLAY_SCALAR, DISPLAY_SCALAR, DISPLAY_SCALAR);
     }
 }
