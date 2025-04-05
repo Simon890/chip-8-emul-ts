@@ -23,6 +23,8 @@ export class Chip8 {
 
     private _isPaused : boolean;
 
+    private _isRunning : boolean;
+
     private _eventHandler : EventHandler;
 
     constructor(config : PartialConfigObject) {
@@ -34,6 +36,7 @@ export class Chip8 {
         this._keyboard = new Keyboard();
         this._dissasembler = new Dissasembler();
         this._isPaused = false;
+        this._isRunning = false;
     }
 
     public loadRom(rom : ArrayLike<number>) {
@@ -42,16 +45,31 @@ export class Chip8 {
     }
 
     public run() {
+        this._isRunning = true;
         this._asyncRun();
     }
 
     private async _asyncRun() {
-        while(true) {
+        while(this._isRunning) {
             for (let i = 0; i < Config.values.instructionsPerIteration; i++) {
                 this._runOpcode();
             }
             await this._sleep();
         }
+    }
+
+    private _restart() {
+        this._eventHandler = EventHandler.instance;
+        this._memory = new Memory();
+        this._display = new Display(this._memory);
+        this._register = new Register();
+        this._keyboard = new Keyboard();
+        this._dissasembler = new Dissasembler();
+    }
+
+    public stop() {
+        this._isRunning = false;
+        this._restart();
     }
 
     private _sleep() {
